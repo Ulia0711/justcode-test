@@ -4,9 +4,16 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>About Us</title>
 </head>
 <body>
-    <h1>About Page</h1>
+    <h1>About Us</h1>
+    {% if about_us %}
+        <p>{{ about_us.text }}</p>
+        <a href="{{ about_us.whatsapp_link }}">WhatsApp</a>
+        <a href="{{ about_us.telegram_link }}">Telegram</a>
+    {% else %}
+        <p>No information about us available.</p>
+    {% endif %}
 </body>
 </html>
