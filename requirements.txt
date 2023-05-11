@@ -1,2 +1,8 @@
 Django
+djangorestframework
+djangorestframework-simplejwt
+drf-spectacular
+drf-spectacular-sidecar
+django-rest-swagger
 Pillow
+django-jazzmin

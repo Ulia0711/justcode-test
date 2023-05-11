@@ -1,0 +1,10 @@
+.header {
+    width: 100%;
+    background-color: rgb(255, 162, 0);
+}
+.post {
+    margin-top: 20px;
+    width: 450px;
+    margin: 20px auto;
+    border: 5px solid black;
+}

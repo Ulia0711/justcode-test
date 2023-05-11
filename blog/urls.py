@@ -1,7 +1,8 @@
 from django.urls import path, include
-from .views import index, about
+from .views import index, about, post_single
 
 urlpatterns = [
-    path('', index, name='home'),
-    path('about', about, name='about')
+    path('', index, name='index'),
+    path('<int:pk>/', post_single, name='single'),
+    path('about', about, name='about'),
 ]
