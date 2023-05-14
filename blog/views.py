@@ -1,38 +1,75 @@
 from django.shortcuts import render, get_object_or_404
-from blog.models import Post, AboutUs
+from blog.models import Post
 from blog.forms import PostForm
 from django.shortcuts import redirect
 from django.utils import timezone
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework import mixins
-from .serializers import PostSerializer
-from .models import Post
+from rest_framework_simplejwt.views import (
+    TokenObtainSlidingView,
+    TokenRefreshSlidingView,
+)
+from rest_framework.viewsets import ModelViewSet, GenericViewSet,mixins
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from .serializers import TokenObtainPairSerializer, TokenRefreshSerializer, UserSerializer, GetUserSerializer, PostSerializer
+from rest_framework.response import Response
+from rest_framework.filters import BaseFilterBackend, SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+from .models import User
 
-class PostViewSet(GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin):
+class PostView(ModelViewSet):
     serializer_class=PostSerializer
     queryset=Post.objects.all()
+    filter_backends=[DjangoFilterBackend]
+    filterset_fields = ['title', 'text']
+
+
+class TokenObtainPairView(TokenObtainSlidingView):
+    permission_classes=[AllowAny]
+    serializer_class=TokenObtainPairSerializer
+
+class TokenRefreshView(TokenRefreshSlidingView):
+    permission_classes=[AllowAny]
+    serializer_class=TokenRefreshSerializer
+
+class RegisterView(GenericViewSet, mixins.CreateModelMixin):
+    permission_classes=[AllowAny]
+    serializer_class=UserSerializer
+
+class UserView(ModelViewSet):
+    permission_classes=[IsAuthenticated]
+    serializer_class=GetUserSerializer
+    queryset=User.objects.all()
+
+    def get_current_user(self,request,*args,**kwargs):
+        serializer=self.get_serializer(request.user)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
 
 def index(request):
-    news = Post.objects.all()
-    return render(request, 'index.html', {'posts': news})
+    ls=Post.objects.all()
+    return render(request,'index.html',{'posts':ls})
+
 
 def about(request):
-    about_us = AboutUs.objects.all()
-    return render(request, 'about.html', {'about_us': about_us})
+    # AboutUs.objects.last()
+    # AboutUs.objects.get()
+    # AboutUs.objects.filter()
+    return render(request,'about.html')
 
-def post_single(request, pk):
-    p = get_object_or_404(Post.objects.all(), pk=pk)
-    return render(request, 'post_single.html', {'post': p})
+def post_single(request,pk):
+    # Post.objects.get(pk=pk)
+    p=get_object_or_404(Post.objects.all(),pk=pk)
+    return render(request,'post_single.html',{'post':p})
 
 def post_form(request):
     if request.method == "POST":
         form = PostForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
-            post.author = request.user
-            post.published_date = timezone.now()
+            post.user = request.user
             post.save()
             return redirect('single', pk=post.pk)
     else:
         form = PostForm()
     return render(request, 'post_add.html', {'form': form})
+# Create your views here.
