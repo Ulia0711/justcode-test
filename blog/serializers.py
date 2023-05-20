@@ -7,7 +7,8 @@ from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from .models import User, Post
 from rest_framework import serializers
 
-class TokenObtainPairSerializer(TokenObtainPairSerializer):
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def validate(self, *args, **kwargs):
         data = super().validate(*args, **kwargs)
@@ -23,8 +24,8 @@ class TokenObtainPairSerializer(TokenObtainPairSerializer):
 
         return data
 
-class TokenRefreshSerializer(TokenRefreshSerializer):
-    
+class MyTokenRefreshSerializer(TokenRefreshSerializer):
+
     def validate(self, attrs):
         data = super().validate(attrs)
         refresh = RefreshToken(attrs['refresh'])
@@ -47,7 +48,7 @@ class TokenRefreshSerializer(TokenRefreshSerializer):
         data['username'] = user.username
 
         return data
-    
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
@@ -60,12 +61,6 @@ class GetUserSerializer(serializers.ModelSerializer):
         fields='__all__'
 
 class PostSerializer(serializers.ModelSerializer):
-    user_info=serializers.SerializerMethodField()
-    
     class Meta:
-        model=Post
-        fields='__all__'
-
-    def get_user_info(self,obj):
-        serializer=GetUserSerializer(obj.user)
-        return serializer.data
+        model = Post
+        fields = '__all__'
