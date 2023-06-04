@@ -8,41 +8,39 @@ from rest_framework_simplejwt.views import (
     TokenRefreshSlidingView,
 )
 from rest_framework.viewsets import ModelViewSet, GenericViewSet,mixins
-from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from .serializers import TokenObtainPairSerializer, TokenRefreshSerializer, UserSerializer, GetUserSerializer, PostSerializer
+from .serializers import TokenObtainPairSerializer, TokenRefreshSerializer, ProductCardSerializer,UserSerializer, GetUserSerializer, PostSerializer
 from rest_framework.response import Response
 from rest_framework.filters import BaseFilterBackend, SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status
-from .models import User
+from rest_framework import status, generics
+from .models import User, ProductCard
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from .permissions import IsCourier
-from .models import User
+from .serializers import PostSerializer
+from django.shortcuts import render
+from django.views import View
+from django.http import JsonResponse
+from .models import Post
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from .permissions import SuperAdmin, Seller
 
-class MyEndpointView(APIView):
-    permission_classes = [SuperAdmin]
-
-    def get(self, request):
-        # Логика обработки GET-запроса для суперпользователя
-        return Response({'message': 'GET request received for SuperAdmin'})
-
-class AnotherEndpointView(APIView):
-    permission_classes = [Seller]
-
-    def get(self, request):
-        # Логика обработки GET-запроса для продавца
-        return Response({'message': 'GET request received for Seller'})
+class ProductCardView(GenericViewSet,mixins.ListModelMixin,mixins.RetrieveModelMixin):
+    permission_classes=[AllowAny]
+    serializer_class=ProductCardSerializer
+    queryset=ProductCard.objects.all()
 
 class CourierView(ListAPIView):
     permission_classes=[IsCourier] 
 
     def get(self, request, *args, **kwargs):
         return Response(data={'success':'Поздравляю вы действительно курьер'}, status=status.HTTP_200_OK)
+
+class PostListView(View):
+    def get(self, request):
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True)
+        return JsonResponse(serializer.data, safe=False)
 
 class PostView(ModelViewSet):
     serializer_class=PostSerializer
@@ -81,18 +79,24 @@ class UserView(ModelViewSet):
     def get_current_user(self,request,*args,**kwargs):
         serializer=self.get_serializer(request.user)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
 def index(request):
     ls=Post.objects.all()
     return render(request,'index.html',{'posts':ls})
+
+
 def about(request):
     # AboutUs.objects.last()
     # AboutUs.objects.get()
     # AboutUs.objects.filter()
     return render(request,'about.html')
+
 def post_single(request,pk):
     # Post.objects.get(pk=pk)
     p=get_object_or_404(Post.objects.all(),pk=pk)
     return render(request,'post_single.html',{'post':p})
+
 def post_form(request):
     if request.method == "POST":
         form = PostForm(request.POST)
@@ -105,3 +109,11 @@ def post_form(request):
         form = PostForm()
     return render(request, 'post_add.html', {'form': form})
 # Create your views here.
+
+class PostCreateView(APIView):
+    def post(self, request):
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)

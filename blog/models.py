@@ -7,8 +7,7 @@ from django.contrib.auth.models import (
 )
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import AbstractUser
-from django.db import models
+
 class User(AbstractBaseUser, PermissionsMixin):
     SUPERADMIN, SELLER, COURIER, ASSEMBLER, BASIC=range(1,6)
 
@@ -33,21 +32,46 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=True,
         verbose_name='Статус доступа',
     )
+
     USERNAME_FIELD="username"
     REQUIRED_FIELDS=[]
+
     def save(self, *args, **kwargs):
         # Если пароль не хэширован, то хэшируем его перед сохранением
         if not self.password.startswith('pbkdf2_sha256'):
             self.password = make_password(self.password)
         super().save(*args, **kwargs)
+
 class Post(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,verbose_name='Пользователь создавший пост', null=True,blank=True, related_name='posts')
     title=models.CharField(verbose_name='Заголовок',max_length=255,default='')
     text=models.TextField(verbose_name='Описание')
     date_post=models.DateTimeField(default=timezone.now,verbose_name='Дата создания поста')
+
     class Meta:
         verbose_name='Пост'
         verbose_name_plural='Посты'
+
     def __str__(self) -> str:
         return self.title
+    
+class ProductCard(models.Model):
+    image=models.ImageField(verbose_name='Изображение')
+    title=models.CharField(verbose_name='Наименование товара', max_length=255)
+    price=models.IntegerField(verbose_name='Цена',default=0)
+    description=models.TextField(verbose_name='Описание товара')
+
+    class Meta:
+        verbose_name='Карточка товара'
+        verbose_name_plural='Карточки товаров'
+
+    def __str__(self) -> str:
+        return self.title
+    
+    def get_absolute_image_url(self):
+        if self.image:
+            return self.image.url
+        else:
+            return ""
+
 # Create your models here.
