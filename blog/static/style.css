@@ -1,75 +1,52 @@
-/* style.css */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
 .header {
-    background-color: #e00c0c;
-    padding: 10px;
-    color: #fff;
-}
-
-.post {
-    background-color: #f4f4f4;
+    background-color: #f1f1f1;
     padding: 20px;
+    text-align: center;
+    color: pink; 
+  }
+  
+  .post {
+    border: 1px solid #ccc;
+    padding: 10px;
     margin-bottom: 20px;
-}
-
-.create-post-form {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: #f4f4f4;
-}
-
-.create-post-form h1 {
-    margin-bottom: 10px;
-}
-
-.create-post-form label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.create-post-form input[type="text"],
-.create-post-form textarea {
+  }
+  
+  .create-post-form {
+    margin-top: 40px;
+  }
+  
+  .create-post-form label {
+    font-weight: bold;
+  }
+  
+  .create-post-form input,
+  .create-post-form textarea {
     width: 100%;
-    padding: 5px;
     margin-bottom: 10px;
-}
-
-.create-post-form button[type="submit"] {
-    padding: 5px 10px;
-    background-color: #12d068;
-    color: #fff;
+  }
+  
+  .create-post-form button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
     border: none;
     cursor: pointer;
-}
-
-.button {
-    padding: 5px 10px;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-}
-
-.product-card {
-    background-color: #f4f4f4;
+  }
+  
+  .product-card {
+    border: 1px solid #ccc;
     padding: 10px;
-    margin-bottom: 10px;
-}
-
-.product-card img {
-    max-width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .product-card img {
+    width: 100%;
     height: auto;
-    margin-bottom: 5px;
-}
-
-.product-card h1,
-.product-card h2,
-.product-card p {
-    margin: 0;
-    padding: 0;
-}
+  }
+  
+  .product-card h1,
+  .product-card h2,
+  .product-card p {
+    margin-bottom: 10px;
+  }
+  

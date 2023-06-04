@@ -117,3 +117,9 @@ class PostCreateView(APIView):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
+    
+
+
+def single_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    return render(request, 'single.html', {'post': post})
