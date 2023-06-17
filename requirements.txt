@@ -9,3 +9,8 @@ drf-spectacular-sidecar
 django-rest-swagger
 django-environ
 environ
+
+asgiref
+channels
+daphne
+django-cors-headers
